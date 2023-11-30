@@ -19,9 +19,10 @@ jobs:
       - name: "Executing pipeline for each folder"
         run: |
           echo "${{ steps.updated_files.outputs.all }}" | tr ',' '\n' | awk 'match($0,/([A-Za-z-]+\/){3}/) {print substr($0,RSTART,RLENGTH)}' | sort | uniq > changed_folders
-          echo ${change_folders}
           while read folder; do
             echo ""
+            echo "${folder}"
+            echo ${folder}
             echo ""
           done < changed_folders
           rm changed_folders
