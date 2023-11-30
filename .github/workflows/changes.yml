@@ -19,7 +19,7 @@ jobs:
       - name: "Executing pipeline for each folder"
         run: |
           echo "${{ steps.updated_files.outputs.all }}"
-          echo "${{ steps.updated_files.outputs.all }}" | tr ',' '\n' | awk '/system-tests-version.txt/' | sort | uniq > changed_folders
+          echo "${{ steps.updated_files.outputs.all }}" | tr ',' '\n' | awk '!/system-tests-version.txt/' | sort | uniq > changed_folders
           while read folder; do
             echo ""
             echo "${folder}"
