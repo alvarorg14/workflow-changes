@@ -7,7 +7,7 @@ on:
 
 jobs:
   check_commit:
-    runs-on: [self-hosted, linux]
+    runs-on: ubuntu-latest
     name: Check commit
     steps:
       - name: "Get changed files on the last commit"
@@ -15,7 +15,6 @@ jobs:
         id: updated_files
         with:
           format: csv
-          token: ${{ secrets.GITHUB_TOKEN }}
 
       - name: "Executing pipeline for each folder"
         run: |
