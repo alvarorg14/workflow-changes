@@ -1,0 +1,28 @@
+name: Search Tests Trigger
+on:
+  push:
+    branches:
+      - main
+
+
+jobs:
+  check_commit:
+    runs-on: [self-hosted, linux]
+    name: Check commit
+    steps:
+      - name: "Get changed files on the last commit"
+        uses: jitterbit/get-changed-files@v1
+        id: updated_files
+        with:
+          format: csv
+          token: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: "Executing pipeline for each folder"
+        run: |
+          echo "${{ steps.updated_files.outputs.all }}" | tr ',' '\n' | awk 'match($0,/([A-Za-z-]+\/){3}/) {print substr($0,RSTART,RLENGTH)}' | sort | uniq > changed_folders
+          echo ${change_folders}
+          while read folder; do
+            echo ""
+            echo ""
+          done < changed_folders
+          rm changed_folders
