@@ -3,6 +3,8 @@ on:
   push:
     branches:
       - main
+    paths:
+      - '**_**'
   workflow_dispatch:
 
 jobs:
@@ -24,8 +26,8 @@ jobs:
           list-files: shell
           filters: |
             changed-services:
-              - added|modified: '**_**/values.yaml'
-              - added|modified: '**_**/Chart.yaml'
+              - added|modified: '**/values.yaml'
+              - added|modified: '**/Chart.yaml'
 
       - name: Transform changes into matrix
         id: transform
