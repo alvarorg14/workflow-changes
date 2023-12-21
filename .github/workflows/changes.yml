@@ -40,7 +40,7 @@ jobs:
             service_full_path=$(dirname "$dir")
             service=$(basename "$service_full_path")
             full_environment=$(basename "$dir")
-            IFS='_' read -r environment region <<< "$full_environment"
+            IFS='-' read -r environment region <<< "$full_environment"
             inputs+=$(jq -n --arg svc "$service" --arg env "$environment" --arg region "$region" '{service: $svc, environment: $env, region: $region}')
           done
           json_object=$(echo "${inputs[*]}" | jq --compact-output -n '{"include": [inputs]}')
