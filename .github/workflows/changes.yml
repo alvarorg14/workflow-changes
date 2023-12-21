@@ -58,4 +58,4 @@ jobs:
     steps:
       - name: "Triggering deployment: environment [${{ matrix.environment }}] service [${{ matrix.service }}]"
         run: |
-          echo "${{ matrix.service }}_${{ matrix.environment }}
+          echo "${{ matrix.service }}_${{ matrix.environment }}"
