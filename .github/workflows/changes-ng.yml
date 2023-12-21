@@ -57,6 +57,5 @@ jobs:
     environment: ${{ matrix.environment }}
     steps:
       - name: "Triggering deployment: environment [${{ matrix.environment }}] service [${{ matrix.service }}]"
-        working-directory: /app
         run: |
           echo "${{ matrix.service }}_${{ matrix.environment }}
