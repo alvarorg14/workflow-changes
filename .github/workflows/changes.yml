@@ -39,11 +39,12 @@ jobs:
             dir=$(dirname "$f")
             service_full_path=$(dirname "$dir")
             service=$(basename "$service_full_path")
-            environment=$(basename "$dir")
-            inputs+=$(jq -n --arg svc "$service" --arg env "$environment" '{service: $svc, environment: $env}')
+            full_environment=$(basename "$dir")
+            IFS='_' read -r environment region <<< "$full_environment"
+            inputs+=$(jq -n --arg svc "$service" --arg env "$environment" --arg region "$region" '{service: $svc, environment: $env, region: $region}')
           done
           json_object=$(echo "${inputs[*]}" | jq --compact-output -n '{"include": [inputs]}')
-          matrix_json=$(echo "$json_object" | jq --compact-output -M '.include |= unique_by({service, environment})')
+          matrix_json=$(echo "$json_object" | jq --compact-output -M '.include |= unique_by({service, environment, region})')
           echo "matrix=$matrix_json" >> $GITHUB_OUTPUT
   
 
@@ -56,6 +57,6 @@ jobs:
       matrix: ${{ fromJson(needs.get-files-changed.outputs.matrix) }}
     environment: ${{ matrix.environment }}
     steps:
-      - name: "Triggering deployment: environment [${{ matrix.environment }}] service [${{ matrix.service }}]"
+      - name: "Triggering deployment: environment [${{ matrix.environment }}] region [${{ matrix.region }}] service [${{ matrix.service }}]"
         run: |
-          echo "${{ matrix.service }}_${{ matrix.environment }}"
+          echo "${{ matrix.service }}_${{ matrix.environment }}_${{ matrix.region }}"
