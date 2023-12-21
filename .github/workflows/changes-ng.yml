@@ -44,7 +44,7 @@ jobs:
             inputs+=$(jq -n --arg svc "$service" --arg env "$environment" --arg region "$region" '{service: $svc, environment: $env, region: $region}')
           done
           json_object=$(echo "${inputs[*]}" | jq --compact-output -n '{"include": [inputs]}')
-          matrix_json=$(echo "$json_object" | jq --compact-output -M '.include |= unique_by({service, environment})')
+          matrix_json=$(echo "$json_object" | jq --compact-output -M '.include |= unique_by({service, environment, region})')
           echo "matrix=$matrix_json" >> $GITHUB_OUTPUT
   
 
