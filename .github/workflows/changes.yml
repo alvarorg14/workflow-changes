@@ -19,15 +19,15 @@ jobs:
         uses: actions/checkout@v3
 
       - name: Filter changed services
-        uses: dorny/paths-filter@v2
+        uses: dorny/paths-filter@v2.11.1
         id: filter
         with:
           base: main
           list-files: shell
           filters: |
             changed-services:
-              - added|modified: '**/values.yaml'
-              - added|modified: '**/Chart.yaml'
+              - added|modified: '**-**/values.yaml'
+              - added|modified: '**-**/Chart.yaml'
 
       - name: Transform changes into matrix
         id: transform
