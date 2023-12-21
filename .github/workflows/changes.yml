@@ -20,7 +20,7 @@ jobs:
         uses: dorny/paths-filter@v2
         id: filter
         with:
-          base: main-gen3
+          base: main
           list-files: shell
           filters: |
             changed-services:
