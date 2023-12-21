@@ -5,55 +5,56 @@ on:
       - main
   workflow_dispatch:
 
-get-files-changed:
-  name: Getting changes on services
-  outputs:
-    matrix: ${{ steps.transform.outputs.matrix }}
-    changes: ${{ steps.filter.outputs.changed-services }}
-  runs-on: ubuntu-latest
-  steps:
-    - name: Checkout repository
-      uses: actions/checkout@v3
+jobs:
+  get-files-changed:
+    name: Getting changes on services
+    outputs:
+      matrix: ${{ steps.transform.outputs.matrix }}
+      changes: ${{ steps.filter.outputs.changed-services }}
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v3
 
-    - name: Filter changed services
-      uses: dorny/paths-filter@v2
-      id: filter
-      with:
-        base: main-gen3
-        list-files: shell
-        filters: |
-          changed-services:
-            - added|modified: '**_**/values.yaml'
-            - added|modified: '**_**/Chart.yaml'
+      - name: Filter changed services
+        uses: dorny/paths-filter@v2
+        id: filter
+        with:
+          base: main-gen3
+          list-files: shell
+          filters: |
+            changed-services:
+              - added|modified: '**_**/values.yaml'
+              - added|modified: '**_**/Chart.yaml'
 
-    - name: Transform changes into matrix
-      id: transform
-      continue-on-error: false
-      run: |
-        inputs=()
-        for f in ${{ steps.filter.outputs.changed-services_files }}
-        do
-          dir=$(dirname "$f")
-          service_full_path=$(dirname "$dir")
-          service=$(basename "$service_full_path")
-          environment=$(basename "$dir")
-          inputs+=$(jq -n --arg svc "$service" --arg env "$environment" '{service: $svc, environment: $env}')
-        done
-        json_object=$(echo "${inputs[*]}" | jq --compact-output -n '{"include": [inputs]}')
-        matrix_json=$(echo "$json_object" | jq --compact-output -M '.include |= unique_by({service, environment})')
-        echo "matrix=$matrix_json" >> $GITHUB_OUTPUT
+      - name: Transform changes into matrix
+        id: transform
+        continue-on-error: false
+        run: |
+          inputs=()
+          for f in ${{ steps.filter.outputs.changed-services_files }}
+          do
+            dir=$(dirname "$f")
+            service_full_path=$(dirname "$dir")
+            service=$(basename "$service_full_path")
+            environment=$(basename "$dir")
+            inputs+=$(jq -n --arg svc "$service" --arg env "$environment" '{service: $svc, environment: $env}')
+          done
+          json_object=$(echo "${inputs[*]}" | jq --compact-output -n '{"include": [inputs]}')
+          matrix_json=$(echo "$json_object" | jq --compact-output -M '.include |= unique_by({service, environment})')
+          echo "matrix=$matrix_json" >> $GITHUB_OUTPUT
+  
 
-
-trigger-harness-pipeline:
-  name: "Trigger Harness Pipeline"
-  needs: get-files-changed
-  if: needs.get-files-changed.outputs.changes == 'true'
-  runs-on: ubuntu-latest
-  strategy:
-    matrix: ${{ fromJson(needs.get-files-changed.outputs.matrix) }}
-  environment: ${{ matrix.environment }}
-  steps:
-    - name: "Triggering deployment: environment [${{ matrix.environment }}] service [${{ matrix.service }}]"
-      working-directory: /app
-      run: |
-        echo "${{ matrix.service }}_${{ matrix.environment }}
+  trigger-harness-pipeline:
+    name: "Trigger Harness Pipeline"
+    needs: get-files-changed
+    if: needs.get-files-changed.outputs.changes == 'true'
+    runs-on: ubuntu-latest
+    strategy:
+      matrix: ${{ fromJson(needs.get-files-changed.outputs.matrix) }}
+    environment: ${{ matrix.environment }}
+    steps:
+      - name: "Triggering deployment: environment [${{ matrix.environment }}] service [${{ matrix.service }}]"
+        working-directory: /app
+        run: |
+          echo "${{ matrix.service }}_${{ matrix.environment }}
