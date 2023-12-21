@@ -57,6 +57,6 @@ jobs:
       matrix: ${{ fromJson(needs.get-files-changed.outputs.matrix) }}
     environment: ${{ matrix.environment }}
     steps:
-      - name: "Triggering deployment: environment [${{ matrix.environment }}] service [${{ matrix.service }}]"
+      - name: "Triggering deployment: environment [${{ matrix.environment }}] region [${{ matrix.region }}] service [${{ matrix.service }}]"
         run: |
-          echo "${{ matrix.service }}_${{ matrix.environment }}"
+          echo "${{ matrix.service }}_${{ matrix.environment }}_${{ matrix.region }}"
