@@ -1,4 +1,4 @@
-name: Harness Current Gen
+name: Harness Next Gen
 on:
   push:
     branches:
@@ -23,8 +23,8 @@ get-files-changed:
         list-files: shell
         filters: |
           changed-services:
-            - added|modified: '**-**/values.yaml'
-            - added|modified: '**-**/Chart.yaml'
+            - added|modified: '**_**/values.yaml'
+            - added|modified: '**_**/Chart.yaml'
 
     - name: Transform changes into matrix
       id: transform
